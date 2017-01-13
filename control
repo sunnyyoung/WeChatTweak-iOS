@@ -1,0 +1,9 @@
+Package: net.sunnyyoung.WeChatTweak
+Name: WeChatTweak
+Depends: mobilesubstrate
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: A tweak for WeChat iOS.
+Maintainer: Sunnyyoung
+Author: Sunnyyoung
+Section: Tweaks
