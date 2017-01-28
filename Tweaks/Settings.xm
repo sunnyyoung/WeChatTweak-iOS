@@ -7,6 +7,7 @@
 
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     BOOL isAutoRedEnvelopes = [userDefaults boolForKey:@"WeChatTweakAutoRedEnvelopesKey"];
+    BOOL isAutoRedEnvelopesKeepRunning = [userDefaults boolForKey:@"WeChatTweakAutoRedEnvelopesKeepRunningKey"];
     BOOL isAutoRedEnvelopesDelayRandomly = [userDefaults boolForKey:@"WeChatTweakAutoRedEnvelopesDelayRandomlyKey"];
     BOOL isAutoRedEnvelopesFromMe = [userDefaults boolForKey:@"WeChatTweakAutoRedEnvelopesFromMeKey"];
     CGFloat delaySeconds = [userDefaults doubleForKey:@"WeChatTweakAutoRedEnvelopesDelaySecondsKey"];
@@ -31,10 +32,12 @@
     // AutoRedEnvelopes Section
     MMTableViewSectionInfo *autoRedEnvelopesSectionInfo = [%c(MMTableViewSectionInfo) sectionInfoHeader:@"自动抢红包"];
     MMTableViewCellInfo *autoRedEnvelopesCellInfo = [%c(MMTableViewCellInfo) switchCellForSel:@selector(switchAutoRedEnvelopes:) target:self title:@"自动抢红包" on:isAutoRedEnvelopes];
+    MMTableViewCellInfo *autoRedEnvelopesKeepRunningCellInfo = [%c(MMTableViewCellInfo) switchCellForSel:@selector(switchAutoRedEnvelopesKeepRunning:) target:self title:@"后台运行" on:isAutoRedEnvelopesKeepRunning];
     MMTableViewCellInfo *autoRedEnvelopesFromMeCellInfo = [%c(MMTableViewCellInfo) switchCellForSel:@selector(switchAutoRedEnvelopesFromMe:) target:self title:@"抢自己发出的" on:isAutoRedEnvelopesFromMe];
     MMTableViewCellInfo *autoRedEnvelopesDelayRandomlyCellInfo = [%c(MMTableViewCellInfo) switchCellForSel:@selector(switchAutoRedEnvelopesDelayRandomly:) target:self title:@"随机延迟" on:isAutoRedEnvelopesDelayRandomly];
     MMTableViewCellInfo *autoRedEnvelopesDelaySecondsCellInfo = [%c(MMTableViewCellInfo) normalCellForSel:@selector(setAutoRedEnvelopesDelay) target:self title:@"自动抢红包延迟" rightValue:delaySecondsString accessoryType:1];
     [autoRedEnvelopesSectionInfo addCell:autoRedEnvelopesCellInfo];
+    [autoRedEnvelopesSectionInfo addCell:isAutoRedEnvelopes ? autoRedEnvelopesKeepRunningCellInfo : nil];
     [autoRedEnvelopesSectionInfo addCell:isAutoRedEnvelopes ? autoRedEnvelopesFromMeCellInfo : nil];
     [autoRedEnvelopesSectionInfo addCell:isAutoRedEnvelopes ? autoRedEnvelopesDelayRandomlyCellInfo : nil];
     [autoRedEnvelopesSectionInfo addCell:isAutoRedEnvelopes ? autoRedEnvelopesDelaySecondsCellInfo : nil];
@@ -56,6 +59,12 @@
 %new
 - (void)switchAutoRedEnvelopes:(UISwitch *)sender {
     [[NSUserDefaults standardUserDefaults] setBool:sender.on forKey:@"WeChatTweakAutoRedEnvelopesKey"];
+    [self reloadTableData];
+}
+
+%new
+- (void)switchAutoRedEnvelopesKeepRunning:(UISwitch *)sender {
+    [[NSUserDefaults standardUserDefaults] setBool:sender.on forKey:@"WeChatTweakAutoRedEnvelopesKeepRunningKey"];
     [self reloadTableData];
 }
 

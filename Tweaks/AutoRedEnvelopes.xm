@@ -20,7 +20,7 @@
             // 自己发红包
             BOOL isFromMe = [wrap.m_nsFromUsr isEqualToString:selfContact.m_nsUsrName];
 
-            if (isAutoRedEnvelopes && isChatRoom && (isAutoRedEnvelopesFromMe && isFromMe)) {
+            if (isAutoRedEnvelopes && isChatRoom && !(!isAutoRedEnvelopesFromMe && isFromMe)) {
                 NSString *parametersString = [wrap.m_oWCPayInfoItem.m_c2cNativeUrl stringByReplacingOccurrencesOfString:@"wxpay://c2cbizmessagehandler/hongbao/receivehongbao?" withString:@""];
                 NSDictionary *parametersDictionary = [%c(WCBizUtil) dictionaryWithDecodedComponets:parametersString separator:@"&"];
 
