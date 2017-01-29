@@ -8,6 +8,7 @@
     BOOL isAutoRedEnvelopesKeepRunning = [[NSUserDefaults standardUserDefaults] boolForKey:@"WeChatTweakAutoRedEnvelopesKeepRunningKey"];
     if (isAutoRedEnvelopesKeepRunning) {
         [[%c(KeepRunningManager) sharedInstance] startKeepRunning];
+        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     }
 }
 
@@ -15,6 +16,7 @@
     %orig;
     if ([KeepRunningManager sharedInstance].playing) {
         [[%c(KeepRunningManager) sharedInstance] stopKeepRunning];
+        [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     }
 }
 
