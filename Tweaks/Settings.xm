@@ -11,7 +11,9 @@
     BOOL isAutoRedEnvelopesDelayRandomly = [userDefaults boolForKey:@"WeChatTweakAutoRedEnvelopesDelayRandomlyKey"];
     BOOL isAutoRedEnvelopesFromMe = [userDefaults boolForKey:@"WeChatTweakAutoRedEnvelopesFromMeKey"];
     CGFloat delaySeconds = [userDefaults doubleForKey:@"WeChatTweakAutoRedEnvelopesDelaySecondsKey"];
+    NSUInteger customStepCount = [userDefaults integerForKey:@"WeChatTweakCustomStepCountKey"];
     NSString *delaySecondsString = delaySeconds == 0 ? @"不延迟" : [NSString stringWithFormat:@"%.2f 秒", delaySeconds];
+    NSString *customStepCountString = customStepCount == 0 ? @"不设置" : [NSString stringWithFormat:@"%@ 步", @(customStepCount)];
 
     // AutoRedEnvelopes Section
     MMTableViewSectionInfo *autoRedEnvelopesSectionInfo = [%c(MMTableViewSectionInfo) sectionInfoHeader:@"自动抢红包"];
@@ -26,9 +28,15 @@
     [autoRedEnvelopesSectionInfo addCell:isAutoRedEnvelopes ? autoRedEnvelopesDelayRandomlyCellInfo : nil];
     [autoRedEnvelopesSectionInfo addCell:isAutoRedEnvelopes ? autoRedEnvelopesDelaySecondsCellInfo : nil];
 
+    // OtherSettings Section
+    MMTableViewSectionInfo *otherSettingsSectionInfo = [%c(MMTableViewSectionInfo) sectionInfoHeader:@"其它设置"];
+    MMTableViewCellInfo *customStepCountCellInfo = [%c(MMTableViewCellInfo) normalCellForSel:@selector(setCustomStepCount) target:self title:@"自定义步数" rightValue:customStepCountString accessoryType:1];
+    [otherSettingsSectionInfo addCell:customStepCountCellInfo];
+
     // Reload Data
     MMTableViewInfo *tableViewInfo = MSHookIvar<id>(self, "m_tableViewInfo");
     [tableViewInfo insertSection:autoRedEnvelopesSectionInfo At:0];
+    [tableViewInfo insertSection:otherSettingsSectionInfo At:1];
     [[tableViewInfo getTableView] reloadData];
 }
 
@@ -71,15 +79,35 @@
 }
 
 %new
+- (void)setCustomStepCount {
+    UIAlertView *alertView = [[UIAlertView alloc] init];
+    alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
+    alertView.delegate = self;
+    alertView.title = @"设置步数";
+    alertView.tag = 1;
+    [alertView addButtonWithTitle:@"取消"];
+    [alertView addButtonWithTitle:@"确定"];
+    [alertView textFieldAtIndex:0].placeholder = @"输入自定义步数";
+    [alertView textFieldAtIndex:0].keyboardType = UIKeyboardTypeNumberPad;
+    [alertView show];
+}
+
+%new
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
     if (alertView.tag == 0) {
         // 设置自动抢红包延迟
         if (buttonIndex == 1) {
     	    CGFloat delaySeconds = [[alertView textFieldAtIndex:0].text doubleValue];
     	    [[NSUserDefaults standardUserDefaults] setFloat:delaySeconds forKey:@"WeChatTweakAutoRedEnvelopesDelaySecondsKey"];
-    	    [self reloadTableData];
+        }
+    } else if (alertView.tag == 1) {
+        // 设置自定义步数
+        if (buttonIndex == 1) {
+            NSUInteger customStepCount = [[alertView textFieldAtIndex:0].text integerValue];
+            [[NSUserDefaults standardUserDefaults] setInteger:customStepCount forKey:@"WeChatTweakCustomStepCountKey"];
         }
     }
+    [self reloadTableData];
 }
 
 %end
